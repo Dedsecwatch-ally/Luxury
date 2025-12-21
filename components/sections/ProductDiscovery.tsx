@@ -26,17 +26,17 @@ export function ProductDiscovery() {
     const displayProducts = filteredProducts.slice(0, 12);
 
     return (
-        <section className="py-24 px-4 md:px-12 bg-background min-h-screen">
+        <section className="py-12 md:py-24 px-4 md:px-12 bg-background min-h-screen">
             <div className="flex flex-col gap-10">
 
                 {/* Header & Filters */}
-                <div className="flex flex-col md:flex-row justify-between items-end gap-6 border-b border-border pb-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 border-b border-border pb-8">
                     <div>
                         <h2 className="text-3xl md:text-5xl font-bold mb-2">Discover Design</h2>
                         <p className="text-muted-foreground">Furniture that speaks for itself.</p>
                     </div>
 
-                    <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+                    <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 scrollbar-none">
                         {filters.map((filter, index) => (
                             <Button
                                 key={filter}
