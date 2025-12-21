@@ -53,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(newUser);
         localStorage.setItem("luxury_user", JSON.stringify(newUser));
         // Set cookie for middleware
-        document.cookie = "auth_token=true; path=/; max-age=86400; SameSite=Strict";
+        document.cookie = "auth_token=true; path=/; max-age=86400; SameSite=Lax; Secure";
         router.push("/");
     };
 
@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(devUser);
         localStorage.setItem("luxury_user", JSON.stringify(devUser));
         // Set cookie for middleware
-        document.cookie = "auth_token=true; path=/; max-age=86400; SameSite=Strict";
+        document.cookie = "auth_token=true; path=/; max-age=86400; SameSite=Lax; Secure";
         router.push("/");
     };
 
