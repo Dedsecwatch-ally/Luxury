@@ -86,7 +86,7 @@ export default function CheckoutPage() {
     }
 
     return (
-        <div className="min-h-screen bg-neutral-50 lg:grid lg:grid-cols-2">
+        <div className="min-h-screen bg-neutral-50 lg:grid lg:grid-cols-2 pt-16 md:pt-20">
             {/* Mobile Order Summary Toggle */}
             <div className="lg:hidden bg-neutral-100 border-b border-neutral-200">
                 <button
