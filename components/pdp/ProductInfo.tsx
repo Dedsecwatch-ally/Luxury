@@ -5,28 +5,32 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { ProductConfigurator } from "./ProductConfigurator";
 
 interface ProductInfoProps {
     title: string;
     price: string;
     description: string;
     colors?: { name: string; value: string }[];
+    options?: {
+        fabrics?: { name: string; value: string; priceMod?: number }[];
+        woods?: { name: string; value: string; priceMod?: number }[];
+        legs?: { name: string; value: string; priceMod?: number }[];
+    };
 }
 
 import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
-import { ALL_PRODUCTS, Product } from "@/lib/products";
-
-
+import { ALL_PRODUCTS } from "@/lib/products";
 
 const DEFAULT_COLORS = [
     { name: "Standard", value: "var(--color-warm-beige)" },
 ];
 
-export function ProductInfo({ title, price, description, colors = DEFAULT_COLORS }: ProductInfoProps) {
-    // If no colors provided, default to standard. If provided empty array, ensure at least one option exists or handle conditionally
+export function ProductInfo({ title, price, description, colors = DEFAULT_COLORS, options }: ProductInfoProps) {
     const safeColors = colors && colors.length > 0 ? colors : DEFAULT_COLORS;
     const [selectedColor, setSelectedColor] = useState(safeColors[0]);
+    const [priceModifier, setPriceModifier] = useState(0);
     const { addItem } = useCart();
 
     // Wishlist Logic
@@ -34,11 +38,16 @@ export function ProductInfo({ title, price, description, colors = DEFAULT_COLORS
     const product = ALL_PRODUCTS.find(p => p.name === title);
     const inWishlist = product ? isInWishlist(product.id) : false;
 
-    // Handle cart add
+    // Price Calculation
+    const basePrice = parseInt(price.replace(/[^0-9]/g, ""));
+    const finalPrice = basePrice + priceModifier;
+    const formattedPrice = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(finalPrice);
+
+
     const handleAddToCart = () => {
-        // We need to find the full product object to add it. 
-        // In a real app we'd pass the full ID or object. For now we lookup by title match (safe enough for this demo)
         if (product) {
+            // Include customization details if we had a way to pass them.
+            // For now, we just pass the base product and selected color.
             addItem(product, selectedColor);
         }
     };
@@ -64,7 +73,7 @@ export function ProductInfo({ title, price, description, colors = DEFAULT_COLORS
                     {title}
                 </h1>
                 <p className="text-2xl md:text-3xl font-light text-muted-foreground">
-                    {price}
+                    {formattedPrice}
                 </p>
             </motion.div>
 
@@ -78,26 +87,38 @@ export function ProductInfo({ title, price, description, colors = DEFAULT_COLORS
                     {description}
                 </p>
 
-                {/* Color Selector */}
-                <div className="space-y-3">
-                    <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        Finish: {selectedColor.name}
-                    </label>
-                    <div className="flex gap-3">
-                        {colors.map((color) => (
-                            <button
-                                key={color.name}
-                                onClick={() => setSelectedColor(color)}
-                                className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor.name === color.name
-                                    ? "border-foreground scale-110"
-                                    : "border-transparent hover:scale-105"
-                                    }`}
-                                style={{ backgroundColor: color.value }}
-                                aria-label={color.name}
-                            />
-                        ))}
+                {/* Customization Configurator OR Standard Color Selector */}
+                {options ? (
+                    <ProductConfigurator
+                        options={options}
+                        onPriceChange={setPriceModifier}
+                        onConfigurationChange={() => {
+                            // If config has fabric, we could sync it to selectedColor if we wanted, 
+                            // but they might use different data structures. 
+                            // For now, we'll just track pricing.
+                        }}
+                    />
+                ) : (
+                    <div className="space-y-3">
+                        <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                            Finish: {selectedColor.name}
+                        </label>
+                        <div className="flex gap-3">
+                            {safeColors.map((color) => (
+                                <button
+                                    key={color.name}
+                                    onClick={() => setSelectedColor(color)}
+                                    className={`w-10 h-10 rounded-full border-2 transition-all ${selectedColor.name === color.name
+                                        ? "border-foreground scale-110"
+                                        : "border-transparent hover:scale-105"
+                                        }`}
+                                    style={{ backgroundColor: color.value }}
+                                    aria-label={color.name}
+                                />
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-4 pt-8">
