@@ -61,7 +61,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("luxury_user", JSON.stringify(newUser));
         // Set cookie for middleware
         setAuthCookie("true");
-        router.push("/");
+        // Force full reload to ensure middleware sees the cookie
+        window.location.href = "/";
     };
 
     const logout = () => {
@@ -84,10 +85,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem("luxury_user", JSON.stringify(devUser));
         // Set cookie for middleware
         setAuthCookie("true");
-        
-        // Force a hard navigation to ensure middleware picks up the cookie if router.push is flaky with headers
-        // But router.push should work. We'll use router.refresh() after push if needed, but standard push is fine.
-        router.push("/");
+
+        // Force full reload to ensure middleware sees the cookie
+        window.location.href = "/";
     };
 
     return (
